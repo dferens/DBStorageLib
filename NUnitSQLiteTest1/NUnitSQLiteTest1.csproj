@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C6E563B0-6571-4608-ADAD-E92B16EEECA9}</ProjectGuid>
+    <ProjectGuid>{0F3F92C3-A249-45CC-839F-3190AC0DC932}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DBStorageLib</RootNamespace>
-    <AssemblyName>DBStorageLib</AssemblyName>
+    <RootNamespace>NUnitSQLiteTest1</RootNamespace>
+    <AssemblyName>NUnitSQLiteTest1</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,9 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.82.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,21 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\DBColumnAttribute.cs" />
-    <Compile Include="BaseMembers\DBDatabaseManager.cs" />
-    <Compile Include="BaseMembers\DBStorageItem.cs" />
-    <Compile Include="Attributes\DBStorageParamsAttribute.cs" />
-    <Compile Include="DBColumnInfo.cs" />
-    <Compile Include="DBMemberInfo.cs" />
-    <Compile Include="DBStorageException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SQLiteMembers\SQLiteDatabaseManager.cs" />
-    <Compile Include="SQLiteMembers\SQLiteStorage.cs" />
-    <Compile Include="SQLiteMembers\SQLiteStorageItem.cs" />
-    <Compile Include="TypesExtensions.cs" />
+    <Compile Include="Tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseMembers\DBStorage.cs" />
+    <ProjectReference Include="..\DBStorageLib\DBStorageLib.csproj">
+      <Project>{C6E563B0-6571-4608-ADAD-E92B16EEECA9}</Project>
+      <Name>DBStorageLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,7 +22,7 @@ namespace DBStorageLib.BaseMembers
 
         internal DbConnection Connection { get; set; }
         internal DataSet DataSet { get; set; }
-        private bool _disposed = false;
+        protected bool _disposed = false;
 
         internal DBDatabaseManager(DbConnection connection)
         {
@@ -32,6 +32,11 @@ namespace DBStorageLib.BaseMembers
 
             _databases.Add(connection.ConnectionString, this);
         }
+        ~DBDatabaseManager()
+        {
+            Dispose();
+        }
+
         /// <summary>
         /// Checks if sql table with provided name exists in database
         /// </summary>

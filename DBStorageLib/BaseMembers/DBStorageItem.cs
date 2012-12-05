@@ -28,19 +28,12 @@ namespace DBStorageLib.BaseMembers
         {
             return DBStorage.GetStorage(classType);
         }
-        private static readonly Dictionary<long, DBStorageItem> _items = new Dictionary<long, DBStorageItem>();
-        public static ICollection<DBStorageItem> StorageItems
-        {
-            get
-            {
-                return _items.Values;
-            }
-        }
+        public static readonly Dictionary<long, DBStorageItem> Items = new Dictionary<long, DBStorageItem>();
         public static DBStorageItem GetStorageItem(long id)
         {
-            if (_items.ContainsKey(id))
+            if (Items.ContainsKey(id))
             {
-                return _items[id];
+                return Items[id];
             }
             else
             {
@@ -49,23 +42,31 @@ namespace DBStorageLib.BaseMembers
         }
 
         internal DBStorage Storage;
-        protected DataRow _bindedRow;
-        internal long ID
+        internal DataRow _bindedRow;
+        public long ID
         {
             get
             {
                 return (long)_bindedRow[0];
             }
         }
-        private bool _disposed = false;
+        protected bool _disposed = false;
 
         public DBStorageItem()
         {
             SetupStorage();
             _bindedRow = Storage.CreateRow();
-            _items.Add(ID, this);
-            Save();
+            Items.Add(ID, this);
         }
+        public DBStorageItem(object nothing)
+        {
+            SetupStorage();
+        }
+        ~DBStorageItem()
+        {
+            Dispose();
+        }
+
         public virtual void Save()
         {
             foreach (DBMemberInfo dbMemberInfo in Storage.ColumnBindings.Keys)
@@ -81,6 +82,13 @@ namespace DBStorageLib.BaseMembers
                 DBColumnInfo colInfo = Storage.ColumnBindings[dbMemberInfo];
                 dbMemberInfo.SetValue(this, _bindedRow[colInfo.Name]);
             }
+        }
+        public virtual void Delete()
+        {
+            Items.Remove(this.ID);
+            Storage.DeleteRow(this._bindedRow);
+            this.Storage = null;
+            this._bindedRow = null;
         }
 
         internal virtual DBStorage InitStorage(Type classType, DBStorageParamsAttribute attrs)
@@ -106,9 +114,12 @@ namespace DBStorageLib.BaseMembers
             if (!_disposed)
             {
                 _disposed = true;
+                Save();
 
-                Storage.Dispose();
-
+                if (Storage != null)
+                {
+                    Storage.Dispose();
+                }
                 GC.SuppressFinalize(this);
             }
         }

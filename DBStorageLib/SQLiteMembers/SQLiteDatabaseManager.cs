@@ -8,13 +8,27 @@ namespace DBStorageLib.SQLiteMembers
 {
     internal sealed class SQLiteDatabaseManager : DBDatabaseManager
     {
+        private static Dictionary<Type, string> _sqliteTypeMappings = new Dictionary<Type,string>(){
+            { typeof(byte), "TINYINT" },
+            { typeof(short), "SMALLINT" },
+            { typeof(int), "INT" },
+            { typeof(long), "LONG" },
+            { typeof(float), "REAL" },
+            { typeof(double), "DOUBLE" },
+            { typeof(string), "TEXT" },
+            { typeof(DateTime), "DATETIME" },
+            { typeof(decimal), "NUMERIC" },
+            { typeof(Boolean), "BOOL" },
+            { typeof(Guid), "GUID" }
+        };
+
         internal SQLiteDatabaseManager(DbConnection connection)
             : base(connection) { }
 
         internal override bool IsTablePresent(string tableName)
         {
             DbCommand command = Connection.CreateCommand();
-            command.CommandText = "SELECT * FROM sqlite_master WHERE type='table'";
+            command.CommandText = "SELECT * FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
             bool result = command.ExecuteScalar() != null;
             command.Dispose();
             return result;
@@ -27,32 +41,14 @@ namespace DBStorageLib.SQLiteMembers
         }
         internal override string GetDatabaseTypeName(Type columnType)
         {
-            string newPart;
-
-            if (columnType == typeof(short) ||
-                columnType == typeof(int)   ||
-                columnType == typeof(long))
+            if (_sqliteTypeMappings.ContainsKey(columnType))
             {
-                newPart = "INTEGER";
-            }
-            else if (columnType == typeof(double) ||
-                     columnType == typeof(float)  ||
-                     columnType == typeof(decimal))
-            {
-                newPart = "REAL";
-            }
-            else if (columnType == typeof(string) ||
-                     columnType == typeof(char))
-            {
-                newPart = "TEXT";
+                return _sqliteTypeMappings[columnType];
             }
             else
             {
-                // sqlite3 uses a dynamic type system, so any type name you put
-                // in your <create table> will work
-                newPart = "OBJECT";
+                return "BLOB";
             }
-            return newPart;
         }
     }
 }
