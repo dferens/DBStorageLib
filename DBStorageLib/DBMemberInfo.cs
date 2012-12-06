@@ -56,11 +56,63 @@ namespace DBStorageLib
         {
             if (MemberInfo.MemberType == MemberTypes.Field)
             {
-                ((FieldInfo)MemberInfo).SetValue(instance, value);
+                var fieldInfo = (FieldInfo)MemberInfo;
+
+                if (fieldInfo.FieldType == value.GetType())
+                {
+                    fieldInfo.SetValue(instance, value);
+                }
+                else
+                {
+                    try
+                    {
+                        if (value == DBNull.Value)
+                        {
+                            fieldInfo.SetValue(instance, null);
+                        }
+                        else
+                        {
+                            fieldInfo.SetValue(instance, Convert.ChangeType(value, fieldInfo.FieldType));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new DBStorageException(string.Format("Can not cast '{0}' type to '{1}' type",
+                                                     value.GetType(),
+                                                     fieldInfo.FieldType),
+                                                     e);
+                    }
+                }
             }
             else
             {
-                ((PropertyInfo)MemberInfo).SetValue(instance, value, null);
+                var propertyInfo = (PropertyInfo)MemberInfo;
+
+                if (propertyInfo.PropertyType == value.GetType())
+                {
+                    propertyInfo.SetValue(instance, value, null);
+                }
+                else
+                {
+                    try
+                    {
+                        if (value == DBNull.Value)
+                        {
+                            propertyInfo.SetValue(instance, null, null);
+                        }
+                        else
+                        {
+                            propertyInfo.SetValue(instance, Convert.ChangeType(value, propertyInfo.PropertyType), null);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new DBStorageException(string.Format("Can not cast '{0}' type to '{1}' type",
+                                                     value.GetType(),
+                                                     propertyInfo.PropertyType),
+                                                     e);
+                    }
+                }
             }
         }
     }

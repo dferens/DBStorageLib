@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OrderedTest name="orderedtest1" storage="d:\documents\github\dbstoragelib\slitetestlist1steps\orderedtest1.orderedtest" id="df3db51f-f677-4ce0-8a36-ea48963f3ac7" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Execution id="05cf6632-9b14-4b12-a00d-519ad8bc413f" />
+  <TestLinks>
+    <TestLink id="6b65a185-8d7b-362e-3af2-c2b46754e01f" name="TestMethod1" storage="bin\debug\slitetestlist1steps.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="6ffaf4c9-6dc4-c425-92d7-9c4ca9fa6c59" name="TestMethod2" storage="bin\debug\slitetestlist1steps.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="e5ff6b17-9b6e-ec79-de5b-53513edc3832" name="TestMethod3" storage="bin\debug\slitetestlist1steps.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="f1866ae3-1849-b7b3-56c2-03d363bdbd1d" name="TestMethod4" storage="bin\debug\slitetestlist1steps.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="548b000a-7372-230b-a761-2b08e14ea8fa" name="TestMethod5" storage="bin\debug\slitetestlist1steps.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </TestLinks>
+</OrderedTest>

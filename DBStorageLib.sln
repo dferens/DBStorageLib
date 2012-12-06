@@ -3,7 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBStorageLib", "DBStorageLib\DBStorageLib.csproj", "{C6E563B0-6571-4608-ADAD-E92B16EEECA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitSQLiteTest1", "NUnitSQLiteTest1\NUnitSQLiteTest1.csproj", "{0F3F92C3-A249-45CC-839F-3190AC0DC932}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DA0980B1-7CA9-489B-B59E-A8A8384015DB}"
+	ProjectSection(SolutionItems) = preProject
+		DBStorageLib.vsmdi = DBStorageLib.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLiteTestList1Steps", "SLiteTestList1Steps\SLiteTestList1Steps.csproj", "{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -28,16 +35,16 @@ Global
 		{C6E563B0-6571-4608-ADAD-E92B16EEECA9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C6E563B0-6571-4608-ADAD-E92B16EEECA9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C6E563B0-6571-4608-ADAD-E92B16EEECA9}.Release|x86.ActiveCfg = Release|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{0F3F92C3-A249-45CC-839F-3190AC0DC932}.Release|x86.ActiveCfg = Release|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{68D2F93C-E02E-4D1C-BFFE-E8C80DEBBCBE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

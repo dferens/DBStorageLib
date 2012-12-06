@@ -6,9 +6,9 @@ using DBStorageLib.BaseMembers;
 
 namespace DBStorageLib.SQLiteMembers
 {
-    internal sealed class SQLiteDatabaseManager : DBDatabaseManager
+    public sealed class SQLiteDatabaseManager : DBDatabaseManager
     {
-        private static Dictionary<Type, string> _sqliteTypeMappings = new Dictionary<Type,string>(){
+        private static Dictionary<Type, string> _sqliteSupportedTypeMappings = new Dictionary<Type,string>(){
             { typeof(byte), "TINYINT" },
             { typeof(short), "SMALLINT" },
             { typeof(int), "INT" },
@@ -18,20 +18,29 @@ namespace DBStorageLib.SQLiteMembers
             { typeof(string), "TEXT" },
             { typeof(DateTime), "DATETIME" },
             { typeof(decimal), "NUMERIC" },
-            { typeof(Boolean), "BOOL" },
+            { typeof(bool), "BOOL" },
             { typeof(Guid), "GUID" }
         };
 
-        internal SQLiteDatabaseManager(DbConnection connection)
+        public SQLiteDatabaseManager(DbConnection connection)
             : base(connection) { }
 
         internal override bool IsTablePresent(string tableName)
         {
-            DbCommand command = Connection.CreateCommand();
-            command.CommandText = "SELECT * FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
+            SQLiteCommand command = new SQLiteCommand((SQLiteConnection)Connection);
+            command.CommandText = "SELECT * FROM sqlite_master WHERE type='table' AND name=@name";
+            SQLiteParameter nameParametr = command.CreateParameter();
+            nameParametr.ParameterName = "@name";
+            nameParametr.Value = tableName;
+            command.Parameters.Add("@name", System.Data.DbType.String);
+            command.Parameters["@name"].Value = tableName;
             bool result = command.ExecuteScalar() != null;
             command.Dispose();
             return result;
+        }
+        internal override bool IsTypeSupported(Type type)
+        {
+            return _sqliteSupportedTypeMappings.ContainsKey(type);
         }
         internal override DbDataAdapter CreateDataAdapter(string tableName)
         {
@@ -41,14 +50,7 @@ namespace DBStorageLib.SQLiteMembers
         }
         internal override string GetDatabaseTypeName(Type columnType)
         {
-            if (_sqliteTypeMappings.ContainsKey(columnType))
-            {
-                return _sqliteTypeMappings[columnType];
-            }
-            else
-            {
-                return "BLOB";
-            }
+            return _sqliteSupportedTypeMappings[columnType];
         }
     }
 }

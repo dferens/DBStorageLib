@@ -5,7 +5,7 @@ using System.Data.Common;
 
 namespace DBStorageLib.BaseMembers
 {
-    internal abstract class DBDatabaseManager : IDisposable
+    public abstract class DBDatabaseManager : IDisposable
     {
         private static Dictionary<string, DBDatabaseManager> _databases = new Dictionary<string, DBDatabaseManager>();
         internal static DBDatabaseManager GetDatabase(string connectionString)
@@ -24,7 +24,7 @@ namespace DBStorageLib.BaseMembers
         internal DataSet DataSet { get; set; }
         protected bool _disposed = false;
 
-        internal DBDatabaseManager(DbConnection connection)
+        public DBDatabaseManager(DbConnection connection)
         {
             this.Connection = connection;
             this.Connection.Open();
@@ -44,11 +44,23 @@ namespace DBStorageLib.BaseMembers
         /// <returns></returns>
         internal abstract bool IsTablePresent(string tableName);
         /// <summary>
+        /// In derived class, checks if database can store value of provided type
+        /// </summary>
+        /// <param name="type">Provided type</param>
+        /// <returns></returns>
+        internal abstract bool IsTypeSupported(Type type);
+        /// <summary>
         /// Creates and returns data adapter for table with provided name
         /// </summary>
         /// <param name="tableName">Name of the table</param>
         /// <returns></returns>
         internal abstract DbDataAdapter CreateDataAdapter(string tableName);
+        /// <summary>
+        /// Get string, that describes database's data type, which can store provided type
+        /// </summary>
+        /// <param name="columnType">Provided type</param>
+        /// <returns></returns>
+        internal abstract string GetDatabaseTypeName(Type columnType);
         /// <summary>
         /// Creates "create table" query and executes it
         /// </summary>
@@ -73,12 +85,6 @@ namespace DBStorageLib.BaseMembers
             return "INTEGER PRIMARY KEY";
         }
         /// <summary>
-        /// Get string, that describes database's data type, which can store provided type
-        /// </summary>
-        /// <param name="columnType">Provided type</param>
-        /// <returns></returns>
-        internal abstract string GetDatabaseTypeName(Type columnType);
-        /// <summary>
         /// Creates "drop table" query and executes it
         /// </summary>
         /// <param name="tableName">Name of the table</param>
@@ -89,7 +95,6 @@ namespace DBStorageLib.BaseMembers
             dropCommand.ExecuteScalar();
             dropCommand.Dispose();
         }
-        
         internal void AddTable(DataTable dataTable)
         {
             DataSet.Tables.Add(dataTable);

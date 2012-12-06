@@ -7,9 +7,9 @@ using DBStorageLib.BaseMembers;
 
 namespace DBStorageLib.SQLiteMembers
 {
-    internal sealed class SQLiteStorage : DBStorage
+    public sealed class SQLiteStorage : DBStorage
     {
-        internal SQLiteStorage(Type classType, DBStorageParamsAttribute attrs)
+        public SQLiteStorage(Type classType, DBStorageParamsAttribute attrs)
             : base(classType, attrs) { }
 
         internal override DBDatabaseManager InitDatabaseManager(string connectionString)

@@ -41,7 +41,7 @@ namespace DBStorageLib.BaseMembers
             }
         }
 
-        internal DBStorage Storage;
+        public DBStorage Storage;
         internal DataRow _bindedRow;
         public long ID
         {
@@ -80,7 +80,15 @@ namespace DBStorageLib.BaseMembers
             foreach (DBMemberInfo dbMemberInfo in Storage.ColumnBindings.Keys)
             {
                 DBColumnInfo colInfo = Storage.ColumnBindings[dbMemberInfo];
-                dbMemberInfo.SetValue(this, _bindedRow[colInfo.Name]);
+
+                try
+                {
+                    dbMemberInfo.SetValue(this, _bindedRow[colInfo.Name]);
+                }
+                catch (DBStorageException e)
+                {
+                    throw new DBStorageException("Exception occured while setting value to instance", e);
+                }
             }
         }
         public virtual void Delete()

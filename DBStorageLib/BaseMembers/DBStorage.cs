@@ -7,7 +7,7 @@ using DBStorageLib.Attributes;
 
 namespace DBStorageLib.BaseMembers
 {
-    internal abstract class DBStorage : IDisposable
+    public abstract class DBStorage : IDisposable
 	{
         private static readonly Dictionary<Type, DBStorage> _storages = new Dictionary<Type, DBStorage>();
         public static ICollection<DBStorage> Storages
@@ -46,6 +46,7 @@ namespace DBStorageLib.BaseMembers
             try
             {
                 CheckProvidedType();
+                SetupDatabaseManager(attrs.ConnectionString);
                 InitBindings();
                 _storages.Add(classType, this);
             }
@@ -54,8 +55,6 @@ namespace DBStorageLib.BaseMembers
                 throw new DBStorageException(string.Format("Exception occured while creating DBStorage object for type {0}", classType),
                                              innerException);
             }
-            
-            SetupDatabaseManager(attrs.ConnectionString);
             
             if (DatabaseManager.IsTablePresent(TableName))
             {
@@ -113,13 +112,26 @@ namespace DBStorageLib.BaseMembers
         /// <param name="row">Provided row</param>
         internal virtual void DeleteRow(DataRow row)
         {
-            DataTable.Rows.Remove(row);
+            row.Delete();
         }
         /// <summary>
         /// Loads its datatable from disk
         /// </summary>
-        internal virtual void LoadFromDisk()
+        public virtual void LoadFromDisk()
         {
+            List<long> toDeleteIDs = new List<long>();
+            foreach (DBStorageItem item in DBStorageItem.Items.Values)
+            {
+                if (item.GetType() == ClassType)
+                {
+                    toDeleteIDs.Add(item.ID);
+                }
+            }
+            foreach (long id in toDeleteIDs)
+            {
+                DBStorageItem.Items.Remove(id);
+            }
+            DataTable.Rows.Clear();
             DataAdapter.Fill(DataTable);
 
             foreach (DataRow row in DataTable.Rows)
@@ -133,7 +145,7 @@ namespace DBStorageLib.BaseMembers
         /// <summary>
         /// Saves its datatable to disk
         /// </summary>
-        internal virtual void SaveToDisk()
+        public virtual void SaveToDisk()
         {
             DataAdapter.Update(DataTable);
         }
@@ -192,8 +204,16 @@ namespace DBStorageLib.BaseMembers
                                         throw new Exception("Can save to database only fields and properties");
                             }
 
-                            ColumnBindings.Add(new DBMemberInfo(memberInfo),
-                                                new DBColumnInfo(bindingName, bindingType));
+                            if (DatabaseManager.IsTypeSupported(bindingType))
+                            {
+                                ColumnBindings.Add(new DBMemberInfo(memberInfo),
+                                                   new DBColumnInfo(bindingName, bindingType));
+                            }
+                            else
+                            {
+                                throw new DBStorageException(string.Format("This storage can not store value of type {0} of '{1}",
+                                                                           bindingType, memberInfo.Name));
+                            }
                             break;
                         }
                     default:
@@ -216,11 +236,7 @@ namespace DBStorageLib.BaseMembers
                 {
                     if (DataTable.Columns.Contains(colInfo.Name))
                     {
-                        if (IsCastableTo(colInfo.Type, DataTable.Columns[colInfo.Name].DataType))
-                        {
-                            continue;
-                        }
-                        else
+                        if (colInfo.Type != DataTable.Columns[colInfo.Name].DataType)
                         {
                             return false;
                         }
@@ -246,10 +262,6 @@ namespace DBStorageLib.BaseMembers
             {
                 throw new DBStorageException("Your class must contain public parameterless constructor, that calls 'base(null)'");
             }
-        }
-        private bool IsCastableTo(Type storedType, Type assignedType)
-        {
-            return storedType.IsCastableTo(assignedType);
         }
 
         #region IDisposable
