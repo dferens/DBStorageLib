@@ -30,6 +30,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +53,7 @@
     <Compile Include="BaseMembers\DBDatabaseManager.cs" />
     <Compile Include="BaseMembers\DBStorageItem.cs" />
     <Compile Include="Attributes\DBStorageParamsAttribute.cs" />
+    <Compile Include="Core.cs" />
     <Compile Include="DBColumnInfo.cs" />
     <Compile Include="DBMemberInfo.cs" />
     <Compile Include="DBStorageException.cs" />

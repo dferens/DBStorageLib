@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using DBStorageLib;
 using DBStorageLib.Attributes;
 using DBStorageLib.SQLiteMembers;
-using DBStorageLib.BaseMembers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace SLiteTestList1Steps
 {
@@ -46,19 +46,21 @@ namespace SLiteTestList1Steps
         { }
     }
 
-    [DBStorageParams("data source=..\\..\test1.db")]
+    [DBStorageParams("data source=test1.db")]
     public class User : SQLiteStorageItem
     {
         [DBColumn]
         public string Name;
         [DBColumn]
         public int Age { get; set; }
+        [DBColumn]
+        private Guid _someObjectID;
 
         public User(string name, int age)
         {
             this.Name = name;
             this.Age = age;
-            Save();
+            _someObjectID = Guid.NewGuid();
         }
 
         public User() : base(null) { }
@@ -74,10 +76,13 @@ namespace SLiteTestList1Steps
         [TestMethod]
         public void TestMethod1()
         {
+            Core.Init();
+
             this.vasa = new TestClass("Vasilii", 1, Guid.NewGuid());
             this.kristina = new TestClass("Kristina", 2, Guid.NewGuid());
             this.vitja = new TestClass("Vitja", 3, Guid.NewGuid());
-            TestClass vasa2 = (TestClass)TestClass.Items[vasa.ID];
+            SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(TestClass));
+            TestClass vasa2 = (TestClass)storage.Items[vasa.ID];
 
             Assert.AreSame(vasa, vasa2);
             Assert.AreEqual(vasa.StringValue, "Vasilii");
@@ -93,12 +98,12 @@ namespace SLiteTestList1Steps
         [TestMethod]
         public void TestMethod2()
         {
-            Assert.AreEqual(TestClass.Items.Count, 3);
-            Assert.AreEqual(((TestClass)TestClass.Items[2]).StringValue, "Vitja");
-            DBStorage storage = TestClass.Items[0].Storage;
+            SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(TestClass));
+            Assert.AreEqual(storage.Items.Count, 3);
+            Assert.AreEqual(((TestClass)storage.Items[2]).StringValue, "Vitja");
             storage.SaveToDisk();
             storage.LoadFromDisk();
-            Assert.AreEqual(TestClass.Items.Count, 3);
+            Assert.AreEqual(storage.Items.Count, 3);
         }
 
         [TestMethod]
@@ -107,7 +112,7 @@ namespace SLiteTestList1Steps
             TestClass x = new TestClass(default(string), default(short), default(Guid),
                                         default(int), default(long), default(decimal), 
                                         default(double), default(float));
-            DBStorage storage = x.Storage;
+            SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(TestClass));
             storage.SaveToDisk();
             storage.LoadFromDisk();
             Assert.AreEqual(x.StringValue, default(string));
@@ -123,9 +128,9 @@ namespace SLiteTestList1Steps
         [TestMethod]
         public void TestMethod4()
         {
-            DBStorage storage = DBStorage.GetStorage(typeof(TestClass));
-            List<DBStorageItem> toDelete = new List<DBStorageItem>();
-            foreach (DBStorageItem item in DBStorageItem.Items.Values)
+            SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(TestClass));
+            List<SQLiteStorageItem> toDelete = new List<SQLiteStorageItem>();
+            foreach (SQLiteStorageItem item in storage.Items.Values)
             {
                 toDelete.Add(item);
             }
@@ -135,22 +140,18 @@ namespace SLiteTestList1Steps
             }
             storage.SaveToDisk();
             storage.LoadFromDisk();
-            Assert.AreEqual(TestClass.Items.Count, 0);
+            Assert.AreEqual(storage.Items.Count, 0);
         }
 
         [TestMethod]
         public void TestMethod5()
         {
-            var storage = DBStorage.GetStorage(typeof(User));
-            User u1 = User.Items[0] as User;
-            User u2 = User.Items[1] as User;
-            User u3 = User.Items[2] as User;
-            Assert.AreEqual(u1.Age, 91);
-            Assert.AreEqual(u2.Age, 92);
-            Assert.AreEqual(u3.Age, 93);
-            Assert.AreEqual(u1.Name, "User1Name");
-            Assert.AreEqual(u2.Name, "User2Name");
-            Assert.AreEqual(u3.Name, "User3Name");
+            SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(User));
+
+            Assert.AreEqual(storage.ColumnBindings.Count, 3);
+
+            Core.Close();
         }
+
     }
 }

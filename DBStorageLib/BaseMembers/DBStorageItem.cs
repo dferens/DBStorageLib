@@ -5,40 +5,11 @@ using DBStorageLib.Attributes;
 
 namespace DBStorageLib.BaseMembers
 {
-    public abstract class DBStorageItem : IDisposable
+    public abstract class DBStorageItem
     {
-        private static DBStorageParamsAttribute GetStorageParams(Type classType)
-        {
-            object[] classAttributes = classType.GetCustomAttributes(typeof(DBStorageParamsAttribute), false);
-
-            if (classAttributes.Length == 1)
-            {
-                return (DBStorageParamsAttribute)classAttributes[0];
-            }
-            else if (classAttributes.Length > 1)
-            {
-                throw new Exception(string.Format("One <DBStorageParamsAttribute> expected, got {0}", classAttributes.Length));
-            }
-            else
-            {
-                return null;
-            }
-        }
         private static DBStorage GetStorage(Type classType)
         {
             return DBStorage.GetStorage(classType);
-        }
-        public static readonly Dictionary<long, DBStorageItem> Items = new Dictionary<long, DBStorageItem>();
-        public static DBStorageItem GetStorageItem(long id)
-        {
-            if (Items.ContainsKey(id))
-            {
-                return Items[id];
-            }
-            else
-            {
-                return null;
-            }
         }
 
         public DBStorage Storage;
@@ -56,15 +27,11 @@ namespace DBStorageLib.BaseMembers
         {
             SetupStorage();
             _bindedRow = Storage.CreateRow();
-            Items.Add(ID, this);
+            Storage.Items.Add(ID, this);
         }
         public DBStorageItem(object nothing)
         {
             SetupStorage();
-        }
-        ~DBStorageItem()
-        {
-            Dispose();
         }
 
         public virtual void Save()
@@ -93,13 +60,12 @@ namespace DBStorageLib.BaseMembers
         }
         public virtual void Delete()
         {
-            Items.Remove(this.ID);
-            Storage.DeleteRow(this._bindedRow);
+            Storage.Delete(this);
             this.Storage = null;
             this._bindedRow = null;
         }
 
-        internal virtual DBStorage InitStorage(Type classType, DBStorageParamsAttribute attrs)
+        internal virtual DBStorage InitStorage(Type classType)
         {
             throw new NotImplementedException("You should implement this");
         }
@@ -111,26 +77,8 @@ namespace DBStorageLib.BaseMembers
             if (this.Storage == null)
             {
                 Type thisRealType = this.GetType();
-
-                this.Storage = InitStorage(thisRealType, GetStorageParams(thisRealType));
+                this.Storage = InitStorage(thisRealType);
             }
         }
-
-        #region IDisposable
-        public virtual void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-                Save();
-
-                if (Storage != null)
-                {
-                    Storage.Dispose();
-                }
-                GC.SuppressFinalize(this);
-            }
-        }
-        #endregion
     }
 }

@@ -7,8 +7,25 @@ using DBStorageLib.Attributes;
 
 namespace DBStorageLib.BaseMembers
 {
-    public abstract class DBStorage : IDisposable
+    public abstract class DBStorage
 	{
+        internal static DBStorageParamsAttribute GetStorageParams(Type classType)
+        {
+            object[] classAttributes = classType.GetCustomAttributes(typeof(DBStorageParamsAttribute), false);
+
+            if (classAttributes.Length == 1)
+            {
+                return (DBStorageParamsAttribute)classAttributes[0];
+            }
+            else if (classAttributes.Length > 1)
+            {
+                throw new Exception(string.Format("One <DBStorageParamsAttribute> expected, got {0}", classAttributes.Length));
+            }
+            else
+            {
+                return null;
+            }
+        }
         private static readonly Dictionary<Type, DBStorage> _storages = new Dictionary<Type, DBStorage>();
         public static ICollection<DBStorage> Storages
         {
@@ -29,13 +46,14 @@ namespace DBStorageLib.BaseMembers
             }
         }
 
-        internal Dictionary<DBMemberInfo, DBColumnInfo> ColumnBindings;
+        public Dictionary<long, DBStorageItem> Items = new Dictionary<long,DBStorageItem>();
+        public Dictionary<DBMemberInfo, DBColumnInfo> ColumnBindings;
         internal DBDatabaseManager DatabaseManager  { get; set; }
         internal DataTable DataTable                { get; set; }
         internal DbDataAdapter DataAdapter          { get; set; }
         internal string TableName                   { get; set; }
         internal Type ClassType                     { get; set; }
-        protected bool _disposed = false;
+        protected bool _closed = false;
 
         internal DBStorage(Type classType, DBStorageParamsAttribute attrs)
         {
@@ -78,10 +96,8 @@ namespace DBStorageLib.BaseMembers
             DatabaseManager.AddTable(DataTable);
             DataAdapter.Fill(DataTable);
         }
-        ~DBStorage()
-        {
-            Dispose();
-        }
+        internal DBStorage(Type classType)
+            : this(classType, GetStorageParams(classType)) { }
 
         /// <summary>
         /// In derived class, should initialize DatabaseManager for current DBStorage
@@ -107,12 +123,25 @@ namespace DBStorageLib.BaseMembers
             return newRow;
         }
         /// <summary>
-        /// Removes datarow from datatable
+        /// Deletes item from storage
         /// </summary>
-        /// <param name="row">Provided row</param>
-        internal virtual void DeleteRow(DataRow row)
+        /// <param name="item">Provided item</param>
+        internal void Delete(DBStorageItem item)
         {
-            row.Delete();
+            Items.Remove(item.ID);
+            item._bindedRow.Delete();
+        }
+        /// <summary>
+        /// Closes DBStorage
+        /// </summary>
+        internal void Close()
+        {
+            if (_closed == false)
+            {
+                _closed = true;
+                SaveToDisk();
+                DatabaseManager.Close();
+            }
         }
         /// <summary>
         /// Loads its datatable from disk
@@ -120,16 +149,13 @@ namespace DBStorageLib.BaseMembers
         public virtual void LoadFromDisk()
         {
             List<long> toDeleteIDs = new List<long>();
-            foreach (DBStorageItem item in DBStorageItem.Items.Values)
+            foreach (DBStorageItem item in Items.Values)
             {
-                if (item.GetType() == ClassType)
-                {
-                    toDeleteIDs.Add(item.ID);
-                }
+                toDeleteIDs.Add(item.ID);
             }
             foreach (long id in toDeleteIDs)
             {
-                DBStorageItem.Items.Remove(id);
+                Items.Remove(id);
             }
             DataTable.Rows.Clear();
             DataAdapter.Fill(DataTable);
@@ -139,7 +165,7 @@ namespace DBStorageLib.BaseMembers
                 DBStorageItem newItem = (DBStorageItem)Activator.CreateInstance(ClassType);
                 newItem._bindedRow = row;
                 newItem.Load();
-                DBStorageItem.Items.Add(newItem.ID, newItem);
+                Items.Add(newItem.ID, newItem);
             }
         }
         /// <summary>
@@ -147,14 +173,20 @@ namespace DBStorageLib.BaseMembers
         /// </summary>
         public virtual void SaveToDisk()
         {
+            foreach (var item in Items.Values)
+            {
+                item.Save();
+            }
             DataAdapter.Update(DataTable);
         }
 
         private void InitBindings()
         {
             ColumnBindings = new Dictionary<DBMemberInfo, DBColumnInfo>();
+            List<MemberInfo> members = new List<MemberInfo>(ClassType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
+            members.AddRange(ClassType.GetProperties());
 
-            foreach (MemberInfo memberInfo in ClassType.GetMembers())
+            foreach (MemberInfo memberInfo in members)
             {
                 object[] attributes = memberInfo.GetCustomAttributes(typeof(DBColumnAttribute), false);
 
@@ -174,30 +206,14 @@ namespace DBStorageLib.BaseMembers
                                 case MemberTypes.Field:
                                     {
                                         FieldInfo fieldInfo = (FieldInfo)memberInfo;
-
-                                        if (fieldInfo.IsPublic)
-                                        {
-                                            bindingType = ((FieldInfo)memberInfo).FieldType;
-                                        }
-                                        else
-                                        {
-                                            throw new DBStorageException("Can use fields with 'public' access modifier only.");
-                                        }
+                                        bindingType = ((FieldInfo)memberInfo).FieldType;
                                         break;
                                     }
-                            
+
                                 case MemberTypes.Property:
                                     {
                                         PropertyInfo propertyInfo = (PropertyInfo)memberInfo;
-
-                                        if (propertyInfo.CanRead && propertyInfo.CanWrite)
-                                        {
-                                            bindingType = propertyInfo.PropertyType;
-                                        }
-                                        else
-                                        {
-                                            throw new DBStorageException("Can use properties with both 'get' and 'set' methods defined");
-                                        }
+                                        bindingType = propertyInfo.PropertyType;
                                         break;
                                     }
                                 default:
@@ -263,25 +279,5 @@ namespace DBStorageLib.BaseMembers
                 throw new DBStorageException("Your class must contain public parameterless constructor, that calls 'base(null)'");
             }
         }
-
-        #region IDisposable
-        public virtual void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-
-                foreach (DBStorageItem dbItem in DBStorageItem.Items.Values)
-                {
-                    dbItem.Dispose();
-                }
-             
-                SaveToDisk();
-                DatabaseManager.Dispose();
-
-                GC.SuppressFinalize(this);
-            }
-        }
-        #endregion
     }
 }

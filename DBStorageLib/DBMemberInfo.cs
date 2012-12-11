@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace DBStorageLib
 {
-    internal class DBMemberInfo
+    public class DBMemberInfo
     {
         internal MemberInfo MemberInfo { get; set; }
         internal string Name

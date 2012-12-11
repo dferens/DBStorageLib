@@ -2,7 +2,7 @@
 
 namespace DBStorageLib
 {
-    internal class DBColumnInfo
+    public class DBColumnInfo
     {
         internal string Name { get; set; }
         internal Type Type { get; set; }

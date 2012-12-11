@@ -5,7 +5,7 @@ using System.Data.Common;
 
 namespace DBStorageLib.BaseMembers
 {
-    public abstract class DBDatabaseManager : IDisposable
+    public abstract class DBDatabaseManager
     {
         private static Dictionary<string, DBDatabaseManager> _databases = new Dictionary<string, DBDatabaseManager>();
         internal static DBDatabaseManager GetDatabase(string connectionString)
@@ -22,7 +22,7 @@ namespace DBStorageLib.BaseMembers
 
         internal DbConnection Connection { get; set; }
         internal DataSet DataSet { get; set; }
-        protected bool _disposed = false;
+        protected bool _closed = false;
 
         public DBDatabaseManager(DbConnection connection)
         {
@@ -31,10 +31,6 @@ namespace DBStorageLib.BaseMembers
             this.DataSet = new DataSet();
 
             _databases.Add(connection.ConnectionString, this);
-        }
-        ~DBDatabaseManager()
-        {
-            Dispose();
         }
 
         /// <summary>
@@ -99,6 +95,18 @@ namespace DBStorageLib.BaseMembers
         {
             DataSet.Tables.Add(dataTable);
         }
+        internal void Close()
+        {
+            if (_closed == false)
+            {
+                _closed = true;
+                if (this.Connection.State != ConnectionState.Closed)
+                {
+                    this.Connection.Close();
+                }
+                _databases.Remove(this.Connection.ConnectionString);
+            }
+        }
 
         private List<string> ConstructColumnTypes(Dictionary<DBMemberInfo, DBColumnInfo> bindings)
         {
@@ -113,23 +121,5 @@ namespace DBStorageLib.BaseMembers
             }
             return parts;
         }
-
-        #region IDisposable
-        public virtual void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-
-                foreach (DBStorage storage in DBStorage.Storages)
-                {
-                    storage.Dispose();
-                }
-                Connection.Dispose();
-
-                GC.SuppressFinalize(this);
-            }
-        }
-        #endregion
     }
 }

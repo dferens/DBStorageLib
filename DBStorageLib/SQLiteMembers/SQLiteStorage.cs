@@ -11,6 +11,8 @@ namespace DBStorageLib.SQLiteMembers
     {
         public SQLiteStorage(Type classType, DBStorageParamsAttribute attrs)
             : base(classType, attrs) { }
+        public SQLiteStorage(Type classType)
+            : base(classType) { }
 
         internal override DBDatabaseManager InitDatabaseManager(string connectionString)
         {
