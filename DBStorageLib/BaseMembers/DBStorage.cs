@@ -46,7 +46,14 @@ namespace DBStorageLib.BaseMembers
             }
         }
 
-        public Dictionary<long, DBStorageItem> Items = new Dictionary<long,DBStorageItem>();
+        public Dictionary<long, DBStorageItem> Items;
+        public DBStorageItem this[long id]
+        {
+            get
+            {
+                return this.GetItem(id);
+            }
+        }
         public Dictionary<DBMemberInfo, DBColumnInfo> ColumnBindings;
         internal DBDatabaseManager DatabaseManager  { get; set; }
         internal DataTable DataTable                { get; set; }
@@ -57,12 +64,14 @@ namespace DBStorageLib.BaseMembers
 
         internal DBStorage(Type classType, DBStorageParamsAttribute attrs)
         {
-            ColumnBindings = new Dictionary<DBMemberInfo, DBColumnInfo>();
-            ClassType = classType;
-            TableName = attrs.CustomTableName ?? classType.Name;
-
             try
             {
+                CheckAttributeParams(attrs);
+                
+                ColumnBindings = new Dictionary<DBMemberInfo, DBColumnInfo>();
+                ClassType = classType;
+                TableName = attrs.CustomTableName ?? classType.Name;
+
                 CheckProvidedType();
                 SetupDatabaseManager(attrs.ConnectionString);
                 InitBindings();
@@ -73,7 +82,8 @@ namespace DBStorageLib.BaseMembers
                 throw new DBStorageException(string.Format("Exception occured while creating DBStorage object for type {0}", classType),
                                              innerException);
             }
-            
+            Items = new Dictionary<long, DBStorageItem>();
+
             if (DatabaseManager.IsTablePresent(TableName))
             {
                 DataAdapter = DatabaseManager.CreateDataAdapter(TableName);
@@ -142,6 +152,10 @@ namespace DBStorageLib.BaseMembers
                 SaveToDisk();
                 DatabaseManager.Close();
             }
+        }
+        public DBStorageItem GetItem(long ID)
+        {
+            return this.Items[ID];
         }
         /// <summary>
         /// Loads its datatable from disk
@@ -277,6 +291,13 @@ namespace DBStorageLib.BaseMembers
             if (defaultConstructor == null)
             {
                 throw new DBStorageException("Your class must contain public parameterless constructor, that calls 'base(null)'");
+            }
+        }
+        private void CheckAttributeParams(DBStorageParamsAttribute attrs)
+        {
+            if (attrs == null)
+            {
+                throw new DBStorageException("You should declare <DBStorageParams> attribute to your class");
             }
         }
     }

@@ -41,9 +41,7 @@ namespace SLiteTestList1Steps
             this.GuidValue = guidVal;
             Save();
         }
-        public TestClass()
-            : base(null)
-        { }
+        public TestClass() : base(null) { }
     }
 
     [DBStorageParams("data source=test1.db")]

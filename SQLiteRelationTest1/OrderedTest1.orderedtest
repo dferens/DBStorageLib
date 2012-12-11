@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OrderedTest name="OrderedTest1" storage="d:\documents\github\dbstoragelib\sqliterelationtest1\orderedtest1.orderedtest" id="7c65de91-cae7-4c90-aa9b-48da29ef874d" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestLinks>
+    <TestLink id="f8f67133-7b4f-28af-37fc-b9455c02fae9" name="TestMethod1" storage="bin\x86\debug\sqliterelationtest1.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="fee689ab-7da1-bbb6-36da-0a3ceb42e1de" name="TestMethod2" storage="bin\x86\debug\sqliterelationtest1.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </TestLinks>
+</OrderedTest>
