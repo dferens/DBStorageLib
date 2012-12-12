@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using DBStorageLib;
 using DBStorageLib.Attributes;
 using DBStorageLib.SQLiteMembers;
@@ -41,7 +42,7 @@ namespace SLiteTestList1Steps
             this.GuidValue = guidVal;
             Save();
         }
-        public TestClass() : base(null) { }
+        private TestClass() : base(null) { }
     }
 
     [DBStorageParams("data source=test1.db")]
@@ -61,7 +62,7 @@ namespace SLiteTestList1Steps
             _someObjectID = Guid.NewGuid();
         }
 
-        public User() : base(null) { }
+        private User() : base(null) { }
     }
 
     [TestClass]
@@ -91,22 +92,19 @@ namespace SLiteTestList1Steps
             Assert.AreEqual(vasa.DoubleValue, 2.3);
             Assert.AreEqual(vasa.FloatValue, 2.3F);
             Assert.AreNotEqual(vasa.GuidValue, null);
+
+            storage.SaveToDisk();
+            storage.LoadFromDisk();
+            Assert.AreEqual(storage.Items.Count, 3);
+
+            Core.Close();
         }
 
         [TestMethod]
         public void TestMethod2()
         {
-            SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(TestClass));
-            Assert.AreEqual(storage.Items.Count, 3);
-            Assert.AreEqual(((TestClass)storage.Items[2]).StringValue, "Vitja");
-            storage.SaveToDisk();
-            storage.LoadFromDisk();
-            Assert.AreEqual(storage.Items.Count, 3);
-        }
+            Core.Init();
 
-        [TestMethod]
-        public void TestMethod3()
-        {
             TestClass x = new TestClass(default(string), default(short), default(Guid),
                                         default(int), default(long), default(decimal), 
                                         default(double), default(float));
@@ -121,11 +119,15 @@ namespace SLiteTestList1Steps
             Assert.AreEqual(x.DoubleValue, default(double));
             Assert.AreEqual(x.FloatValue, default(float));
             Assert.AreNotEqual(x.GuidValue, null);
+
+            Core.Close();
         }
 
         [TestMethod]
-        public void TestMethod4()
+        public void TestMethod3()
         {
+            Core.Init();
+
             SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(TestClass));
             List<SQLiteStorageItem> toDelete = new List<SQLiteStorageItem>();
             foreach (SQLiteStorageItem item in storage.Items.Values)
@@ -142,14 +144,15 @@ namespace SLiteTestList1Steps
         }
 
         [TestMethod]
-        public void TestMethod5()
+        public void TestMethod4()
         {
             SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(User));
-
-            Assert.AreEqual(storage.ColumnBindings.Count, 3);
-
+            
+            // Kung fu in C#
+            int columns = ((Dictionary<DBMemberInfo, DBColumnInfo>)(typeof(SQLiteStorage).GetField("ColumnBindings", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(storage))).Count;
+            Assert.AreEqual(columns, 3);
+            //
             Core.Close();
         }
-
     }
 }

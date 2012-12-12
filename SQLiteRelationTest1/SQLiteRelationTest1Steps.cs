@@ -1,11 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DBStorageLib;
-using DBStorageLib.SQLiteMembers;
+﻿using DBStorageLib;
 using DBStorageLib.Attributes;
+using DBStorageLib.SQLiteMembers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SQLiteRelationTest1
 {
@@ -35,7 +31,7 @@ namespace SQLiteRelationTest1
             {
                 this.Name = name;
             }
-            public User() : base(null) { }
+            private User() : base(null) { }
         }
 
         [TestMethod]

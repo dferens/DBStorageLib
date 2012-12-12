@@ -7,16 +7,23 @@ namespace DBStorageLib.BaseMembers
 {
     public abstract class DBDatabaseManager
     {
-        private static Dictionary<string, DBDatabaseManager> _databases = new Dictionary<string, DBDatabaseManager>();
+        private static Dictionary<string, DBDatabaseManager> _dbmanagers = new Dictionary<string, DBDatabaseManager>();
         internal static DBDatabaseManager GetDatabase(string connectionString)
         {
-            if (_databases.ContainsKey(connectionString))
+            if (_dbmanagers.ContainsKey(connectionString))
             {
-                return _databases[connectionString];
+                return _dbmanagers[connectionString];
             }
             else
             {
                 return null;
+            }
+        }
+        public static ICollection<DBDatabaseManager> Managers
+        {
+            get
+            {
+                return _dbmanagers.Values;
             }
         }
 
@@ -30,7 +37,7 @@ namespace DBStorageLib.BaseMembers
             this.Connection.Open();
             this.DataSet = new DataSet();
 
-            _databases.Add(connection.ConnectionString, this);
+            _dbmanagers.Add(connection.ConnectionString, this);
         }
 
         /// <summary>
@@ -104,7 +111,7 @@ namespace DBStorageLib.BaseMembers
                 {
                     this.Connection.Close();
                 }
-                _databases.Remove(this.Connection.ConnectionString);
+                _dbmanagers.Remove(this.Connection.ConnectionString);
             }
         }
 

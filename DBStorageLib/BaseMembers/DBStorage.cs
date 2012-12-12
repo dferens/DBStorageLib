@@ -47,6 +47,11 @@ namespace DBStorageLib.BaseMembers
         }
 
         public Dictionary<long, DBStorageItem> Items;
+        /// <summary>
+        /// Returns item by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public DBStorageItem this[long id]
         {
             get
@@ -54,12 +59,13 @@ namespace DBStorageLib.BaseMembers
                 return this.GetItem(id);
             }
         }
-        public Dictionary<DBMemberInfo, DBColumnInfo> ColumnBindings;
-        internal DBDatabaseManager DatabaseManager  { get; set; }
-        internal DataTable DataTable                { get; set; }
-        internal DbDataAdapter DataAdapter          { get; set; }
-        internal string TableName                   { get; set; }
-        internal Type ClassType                     { get; set; }
+        internal Dictionary<DBMemberInfo, DBColumnInfo> ColumnBindings;
+        internal DBDatabaseManager DatabaseManager      { get; set; }
+        internal DataTable DataTable                    { get; set; }
+        internal DbDataAdapter DataAdapter              { get; set; }
+        internal string TableName                       { get; set; }
+        internal Type ClassType                         { get; set; }
+        internal ConstructorInfo ClassTypeConstructor   { get; set; }
         protected bool _closed = false;
 
         internal DBStorage(Type classType, DBStorageParamsAttribute attrs)
@@ -150,9 +156,15 @@ namespace DBStorageLib.BaseMembers
             {
                 _closed = true;
                 SaveToDisk();
-                DatabaseManager.Close();
+                this.Items.Clear();
+                _storages.Remove(ClassType);
             }
         }
+        /// <summary>
+        /// Gets an item by the id in this storage
+        /// </summary>
+        /// <param name="ID">Provided id</param>
+        /// <returns></returns>
         public DBStorageItem GetItem(long ID)
         {
             return this.Items[ID];
@@ -176,7 +188,7 @@ namespace DBStorageLib.BaseMembers
 
             foreach (DataRow row in DataTable.Rows)
             {
-                DBStorageItem newItem = (DBStorageItem)Activator.CreateInstance(ClassType);
+                DBStorageItem newItem = (DBStorageItem)ClassTypeConstructor.Invoke(null);
                 newItem._bindedRow = row;
                 newItem.Load();
                 Items.Add(newItem.ID, newItem);
@@ -286,11 +298,16 @@ namespace DBStorageLib.BaseMembers
         }
         private void CheckProvidedType()
         {
-            ConstructorInfo defaultConstructor = this.ClassType.GetConstructor(new Type[] { });
+            ConstructorInfo[] constructors = this.ClassType.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 
-            if (defaultConstructor == null)
+            if (constructors.Length == 1 &&
+                constructors[0].GetParameters().Length == 0)
             {
-                throw new DBStorageException("Your class must contain public parameterless constructor, that calls 'base(null)'");
+                ClassTypeConstructor = constructors[0];
+            }
+            else
+            {
+                throw new DBStorageException("Your class must contain one private parameterless constructor that calls 'base(null)'");
             }
         }
         private void CheckAttributeParams(DBStorageParamsAttribute attrs)
