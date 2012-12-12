@@ -46,13 +46,13 @@ namespace DBStorageLib.BaseMembers
             }
         }
 
-        public Dictionary<long, DBStorageItem> Items;
+        public Dictionary<Guid, DBStorageItem> Items;
         /// <summary>
         /// Returns item by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public DBStorageItem this[long id]
+        public DBStorageItem this[Guid id]
         {
             get
             {
@@ -88,7 +88,7 @@ namespace DBStorageLib.BaseMembers
                 throw new DBStorageException(string.Format("Exception occured while creating DBStorage object for type {0}", classType),
                                              innerException);
             }
-            Items = new Dictionary<long, DBStorageItem>();
+            Items = new Dictionary<Guid, DBStorageItem>();
 
             if (DatabaseManager.IsTablePresent(TableName))
             {
@@ -135,6 +135,7 @@ namespace DBStorageLib.BaseMembers
         internal virtual DataRow CreateRow()
         {
             DataRow newRow = DataTable.NewRow();
+            newRow["ID"] = Guid.NewGuid();
             DataTable.Rows.Add(newRow);
             return newRow;
         }
@@ -165,7 +166,7 @@ namespace DBStorageLib.BaseMembers
         /// </summary>
         /// <param name="ID">Provided id</param>
         /// <returns></returns>
-        public DBStorageItem GetItem(long ID)
+        public DBStorageItem GetItem(Guid ID)
         {
             return this.Items[ID];
         }
@@ -174,12 +175,12 @@ namespace DBStorageLib.BaseMembers
         /// </summary>
         public virtual void LoadFromDisk()
         {
-            List<long> toDeleteIDs = new List<long>();
+            List<Guid> toDeleteIDs = new List<Guid>();
             foreach (DBStorageItem item in Items.Values)
             {
                 toDeleteIDs.Add(item.ID);
             }
-            foreach (long id in toDeleteIDs)
+            foreach (Guid id in toDeleteIDs)
             {
                 Items.Remove(id);
             }

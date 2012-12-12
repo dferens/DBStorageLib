@@ -1,4 +1,5 @@
-﻿using DBStorageLib;
+﻿using System;
+using DBStorageLib;
 using DBStorageLib.Attributes;
 using DBStorageLib.SQLiteMembers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ namespace SQLiteRelationTest1
             [DBColumn]
             public string Name;
             [DBColumn]
-            private long _relatedUserID;
+            private Guid _relatedUserID;
             public User RelatedUser
             {
                 get
@@ -47,38 +48,15 @@ namespace SQLiteRelationTest1
                 user1 = new User("User1");
                 user2 = new User("User2");
                 user3 = new User("User3");
+
+                user1.RelatedUser = user2;
+                user2.RelatedUser = user3;
+                user3.RelatedUser = user1;
+
+                Assert.AreEqual(user1.RelatedUser.Name, "User2");
+                Assert.AreEqual(user2.RelatedUser.Name, "User3");
+                Assert.AreEqual(user3.RelatedUser.Name, "User1");
             }
-            else
-            {
-                user1 = (User)storage[0];
-                user2 = (User)storage.GetItem(1);
-                user3 = (User)storage.Items[2];
-            }
-
-            user1.RelatedUser = user2;
-            user2.RelatedUser = user3;
-            user3.RelatedUser = user1;
-
-            Assert.AreEqual(user1.RelatedUser.Name, "User2");
-            Assert.AreEqual(user2.RelatedUser.Name, "User3");
-            Assert.AreEqual(user3.RelatedUser.Name, "User1");
-        }
-
-        [TestMethod]
-        public void TestMethod2()
-        {
-            User user1, user2, user3;
-            SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(User));
-
-            user1 = (User)storage[0];
-            user2 = (User)storage.GetItem(1);
-            user3 = (User)storage.Items[2];
-
-            Assert.AreEqual(user1.RelatedUser.Name, "User2");
-            Assert.AreEqual(user2.RelatedUser.Name, "User3");
-            Assert.AreEqual(user3.RelatedUser.Name, "User1");
-            //
-            Core.Close();
         }
     }
 }

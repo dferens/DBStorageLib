@@ -27,8 +27,8 @@ namespace DBStorageLib.BaseMembers
             }
         }
 
-        internal DbConnection Connection { get; set; }
-        internal DataSet DataSet { get; set; }
+        internal DbConnection Connection    { get; set; }
+        internal DataSet DataSet            { get; set; }
         protected bool _closed = false;
 
         public DBDatabaseManager(DbConnection connection)
@@ -85,7 +85,7 @@ namespace DBStorageLib.BaseMembers
         /// <returns></returns>
         internal virtual string GetIDColumnTypeName()
         {
-            return "INTEGER PRIMARY KEY";
+            return "GUID PRIMARY KEY";
         }
         /// <summary>
         /// Creates "drop table" query and executes it
@@ -98,10 +98,17 @@ namespace DBStorageLib.BaseMembers
             dropCommand.ExecuteScalar();
             dropCommand.Dispose();
         }
+        /// <summary>
+        /// Adds datatable to database
+        /// </summary>
+        /// <param name="dataTable">Provided datatable</param>
         internal void AddTable(DataTable dataTable)
         {
             DataSet.Tables.Add(dataTable);
         }
+        /// <summary>
+        /// Closes this database manager and frees all resources
+        /// </summary>
         internal void Close()
         {
             if (_closed == false)

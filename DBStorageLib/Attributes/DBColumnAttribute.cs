@@ -2,6 +2,9 @@
 
 namespace DBStorageLib.Attributes
 {
+    /// <summary>
+    /// Add this attribute to any public/private field/property to save it to database
+    /// </summary>
     public class DBColumnAttribute : Attribute
     {
         public string CustomBindingName;

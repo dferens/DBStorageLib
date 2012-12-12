@@ -14,11 +14,11 @@ namespace DBStorageLib.BaseMembers
 
         public DBStorage Storage;
         internal DataRow _bindedRow;
-        public long ID
+        public Guid ID
         {
             get
             {
-                return (long)_bindedRow[0];
+                return (Guid)_bindedRow[0];
             }
         }
         protected bool _disposed = false;
