@@ -62,14 +62,11 @@
     <Compile Include="SQLiteMembers\SQLiteDatabaseManager.cs" />
     <Compile Include="SQLiteMembers\SQLiteStorage.cs" />
     <Compile Include="SQLiteMembers\SQLiteStorageItem.cs" />
-    <Compile Include="TypesExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseMembers\DBStorage.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="OdbcMembers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
