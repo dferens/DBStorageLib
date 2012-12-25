@@ -189,7 +189,7 @@ namespace DBStorageLib.BaseMembers
 
             foreach (DataRow row in DataTable.Rows)
             {
-                DBStorageItem newItem = (DBStorageItem)ClassTypeConstructor.Invoke(null);
+                DBStorageItem newItem = (DBStorageItem)ClassTypeConstructor.Invoke(new object[] { null });
                 newItem._bindedRow = row;
                 newItem.Load();
                 Items.Add(newItem.ID, newItem);
@@ -302,13 +302,14 @@ namespace DBStorageLib.BaseMembers
             ConstructorInfo[] constructors = this.ClassType.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (constructors.Length == 1 &&
-                constructors[0].GetParameters().Length == 0)
+                constructors[0].GetParameters().Length == 1 &&
+                constructors[0].GetParameters()[0].ParameterType == typeof(object))
             {
                 ClassTypeConstructor = constructors[0];
             }
             else
             {
-                throw new DBStorageException("Your class must contain one private parameterless constructor that calls 'base(null)'");
+                throw new DBStorageException("Your class must contain one private constructor with single object parameter that calls 'base(null)'");
             }
         }
         private void CheckAttributeParams(DBStorageParamsAttribute attrs)

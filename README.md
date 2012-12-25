@@ -8,9 +8,9 @@ How-to use :
 -----
 1. Add "DBStorageParams" attribute to your class and define connection string.
 2. Derive your class from XXXStorageItem (for example - SQLiteStorageItem).
-3. Add "DBColumn" attribute to any public/private field/property you want to save in database.
-4. Declare private parameterless constructor that calls "base(null)".
-5. Call "Core.Init" before any use, and "Core.Close" after last use of your instances"
+3. **Add "DBColumn" attribute** to any public/private field/property you want to save in database.
+4. Declare private constructor with **single object paremeter** that calls "base(null)".
+5. Call **"Core.Init"** before any use, and **"Core.Close"** after last use of your instances"
 
 Example
 -------
@@ -42,7 +42,7 @@ Example
         }
         
         // For internal library's usage
-        private EmploymentRecord() : base(null) { }
+        private EmploymentRecord(object nothing) : base(null) { }
     }
     
     // in Program.cs or anywhere
@@ -51,7 +51,21 @@ Example
         DBStorageLib.Core.Init();
         
         // Your code
-        
+ 
+	// You can add as a static field to your class 
+	SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(EmploymentRecord));
+	
+	foreach (EmploymentRecord item in storage.Items.Values)
+	{
+		// Iterate over dictionary
+	}
+	
+	// Get item by ID
+	storage.GetItem(Guid.NewGuid());
+	// or
+	storage[Guid.NewGuid()];
+	
+	// end
         DBStorageLib.Core.Close();
     }
     

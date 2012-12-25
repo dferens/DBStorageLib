@@ -32,7 +32,12 @@ namespace SQLiteRelationTest1
             {
                 this.Name = name;
             }
-            private User() : base(null) { }
+            private User(object nothing) : base(null) { }
+            public User()
+                : base()
+            {
+                // blabla
+            }
         }
 
         [TestMethod]

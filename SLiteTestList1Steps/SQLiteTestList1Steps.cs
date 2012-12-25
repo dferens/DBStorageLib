@@ -42,7 +42,7 @@ namespace SLiteTestList1Steps
             this.GuidValue = guidVal;
             Save();
         }
-        private TestClass() : base(null) { }
+        private TestClass(object nothing) : base(null) { }
     }
 
     [DBStorageParams("data source=test1.db")]
@@ -62,7 +62,7 @@ namespace SLiteTestList1Steps
             _someObjectID = Guid.NewGuid();
         }
 
-        private User() : base(null) { }
+        private User(object nothing) : base(null) { }
     }
 
     [TestClass]
