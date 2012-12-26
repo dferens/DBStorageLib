@@ -51,21 +51,20 @@ Example
         DBStorageLib.Core.Init();
         
         // Your code
- 
-	// You can add as a static field to your class 
-	SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(EmploymentRecord));
+        // You can add as a static field to your class 
+        SQLiteStorage storage = (SQLiteStorage)Core.GetStorage(typeof(EmploymentRecord));
 	
-	foreach (EmploymentRecord item in storage.Items.Values)
-	{
-		// Iterate over dictionary
-	}
+        foreach (EmploymentRecord item in storage.Items.Values)
+        {
+                // Iterate over dictionary
+        }
 	
-	// Get item by ID
-	storage.GetItem(Guid.NewGuid());
-	// or
-	storage[Guid.NewGuid()];
+        // Get item by ID
+        storage.GetItem(Guid.NewGuid());
+        // or
+        storage[Guid.NewGuid()];
 	
-	// end
+        // end
         DBStorageLib.Core.Close();
     }
     
