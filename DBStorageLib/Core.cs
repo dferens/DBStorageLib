@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using DBStorageLib.BaseMembers;
 
 namespace DBStorageLib
@@ -21,19 +18,6 @@ namespace DBStorageLib
             if (_initialized == false)
             {
                 _initialized = true;
-               IEnumerable<Type> iterator = Assembly.GetCallingAssembly()
-                                                    .GetTypes()
-                                                    .Where(t => (t.IsSubclassOf(typeof(DBStorageItem))));
-                foreach (var type in iterator)
-                {
-                    if (type.IsSubclassOf(typeof(SQLiteMembers.SQLiteStorageItem)))
-                    {
-                        new SQLiteMembers.SQLiteStorage(type);
-                    }
-                    else
-                    {
-                    }
-                }
             }
             else
             {

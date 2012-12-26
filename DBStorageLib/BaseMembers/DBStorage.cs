@@ -42,7 +42,27 @@ namespace DBStorageLib.BaseMembers
             }
             else
             {
-                return null;
+                var attrs = GetStorageParams(classType);
+
+                if (attrs == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    if (classType.BaseType == typeof(SQLiteMembers.SQLiteStorageItem))
+                    {
+                        return new SQLiteMembers.SQLiteStorage(classType);
+                    }
+                    else if (false)
+                    {
+                        // For other DBMS 
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
             }
         }
 
