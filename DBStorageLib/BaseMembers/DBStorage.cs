@@ -27,6 +27,9 @@ namespace DBStorageLib.BaseMembers
             }
         }
         private static readonly Dictionary<Type, DBStorage> _storages = new Dictionary<Type, DBStorage>();
+        /// <summary>
+        /// Return collection of storages registered within system
+        /// </summary>
         public static ICollection<DBStorage> Storages
         {
             get
@@ -34,6 +37,11 @@ namespace DBStorageLib.BaseMembers
                 return _storages.Values;
             }
         }
+        /// <summary>
+        /// Returns specific storage for given type
+        /// </summary>
+        /// <param name="classType">Data object type</param>
+        /// <returns></returns>
         public static DBStorage GetStorage(Type classType)
         {
             if (_storages.ContainsKey(classType))
@@ -66,6 +74,9 @@ namespace DBStorageLib.BaseMembers
             }
         }
 
+        /// <summary>
+        /// Returns dictionary of items this storage contains
+        /// </summary>
         public Dictionary<Guid, DBStorageItem> Items;
         /// <summary>
         /// Returns item by id

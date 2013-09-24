@@ -19,6 +19,9 @@ namespace DBStorageLib.BaseMembers
                 return null;
             }
         }
+        /// <summary>
+        /// Collection of registered database managers
+        /// </summary>
         public static ICollection<DBDatabaseManager> Managers
         {
             get

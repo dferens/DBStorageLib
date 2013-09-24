@@ -12,8 +12,14 @@ namespace DBStorageLib.BaseMembers
             return DBStorage.GetStorage(classType);
         }
 
+        /// <summary>
+        /// Storage item's storage instance
+        /// </summary>
         public DBStorage Storage;
         internal DataRow _bindedRow;
+        /// <summary>
+        /// Storage item's identifier
+        /// </summary>
         public Guid ID
         {
             get
@@ -21,7 +27,6 @@ namespace DBStorageLib.BaseMembers
                 return (Guid)_bindedRow[0];
             }
         }
-        protected bool _disposed = false;
 
         public DBStorageItem()
         {
@@ -34,6 +39,9 @@ namespace DBStorageLib.BaseMembers
             SetupStorage();
         }
 
+        /// <summary>
+        /// Saves its data fields & properties to corresponding datatable
+        /// </summary>
         public virtual void Save()
         {
             foreach (DBMemberInfo dbMemberInfo in Storage.ColumnBindings.Keys)
@@ -42,6 +50,9 @@ namespace DBStorageLib.BaseMembers
                 _bindedRow[colInfo.Name] = dbMemberInfo.GetValue(this);
             }
         }
+        /// <summary>
+        /// Fills its data fields & properties with data from corresponding datatable
+        /// </summary>
         public virtual void Load()
         {
             foreach (DBMemberInfo dbMemberInfo in Storage.ColumnBindings.Keys)
@@ -58,6 +69,10 @@ namespace DBStorageLib.BaseMembers
                 }
             }
         }
+        /// <summary>
+        /// Deletes itself from corresponding datatable
+        /// Override this method in derived class to perform specific deletion logic
+        /// </summary>
         public virtual void Delete()
         {
             Storage.Delete(this);
